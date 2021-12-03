@@ -3,17 +3,25 @@ import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
-class Image {
-    public ImageIcon icon;
-}
+import static java.lang.Thread.sleep;
 
-class User extends Unit implements Accessible {
-    public int flag=0;
+
+class User implements Accessible {
+    public static int index=1;
+    public static int width=500;
+    public static int height=450;
+    int y; // 캐릭터 좌표
+    int x; // 캐릭터 좌표
+    boolean[] seating = new boolean[4];
+    public User(){
+
+    };
     public User(JFrame frame, JLabel label) {
+        System.out.println(label.getIcon());
         move(frame, label);
-        label.setBounds(x, y,50,50); // 유저위치에 이미지 삽입
+        label.setBounds(x+(index*100), y,50,50); // 유저위치에 이미지 삽입
+        index++;
     }
-
     public void move(JFrame frame, JLabel k) {
         frame.addKeyListener(new KeyAdapter() {
             public void keyPressed(KeyEvent e){
@@ -89,23 +97,16 @@ class User extends Unit implements Accessible {
             }
         });
     }
-
     public void press(JFrame frame, JLabel k) {
-        System.out.println(flag);
-        if(flag==0) {
+        System.out.println(seating);
+        if(seating[0]==false) {
             frame.getContentPane().setBackground(Color.pink);
-            flag=1;
+            seating[0]=true;
         } else {
             frame.getContentPane().setBackground(Color.white);
-            flag=0;
+            seating[0]=false;
         }
     }
-}
-class Unit {
-    public static int width=500;
-    public static int height=450;
-    int y; // 캐릭터 좌표
-    int x; // 캐릭터 좌표
 }
 
 interface Moveable { void move(JFrame frame, JLabel label); } // 캐릭터가 움직이는 여부 (모서리 나감 x, 모니터 밟지 않기)
@@ -113,16 +114,19 @@ interface Pressable { void press(JFrame frame, JLabel k); } // 모니터 앞 의
 interface Accessible extends Moveable, Pressable { } //
 
 public class MainFrame extends JFrame {
-
     public JFrame frame = new JFrame("studyTool");
     public static int width=500;
     public static int height=450;
     ImageIcon monitorIcon = new ImageIcon(MainFrame.class.getResource("images/monitor.PNG"));
     ImageIcon seatIcon = new ImageIcon(MainFrame.class.getResource("images/seat.PNG"));
     ImageIcon userIcon = new ImageIcon(MainFrame.class.getResource("images/user.PNG"));
+    ImageIcon seatingIcon = new ImageIcon(MainFrame.class.getResource("images/seating.PNG"));
 
     JLabel k = new JLabel(userIcon);
+    JLabel k2 = new JLabel(userIcon);
+    User users[] = new User[4];
     User user = new User(frame, k);
+    User user2 = new User(frame, k2);
 
     paint draw = new paint();
 
@@ -130,6 +134,7 @@ public class MainFrame extends JFrame {
         frame.setContentPane(draw);
         frame.setLayout(null);
         frame.add(k);
+        frame.add(k2);
         frame.setFocusable(true);
         frame.getContentPane().setBackground(Color.white);
         frame.setSize(width, height); //프레임 크기
@@ -146,7 +151,7 @@ public class MainFrame extends JFrame {
 
             java.awt.Image img = monitorIcon.getImage();
             java.awt.Image img2 = seatIcon.getImage();
-
+            java.awt.Image img3 = seatingIcon.getImage();
             //모니터
             g.drawImage(img, 80, 87, 140,67, this);
             g.drawImage(img, 80, 237, 140,67, this);
@@ -158,6 +163,19 @@ public class MainFrame extends JFrame {
             g.drawImage(img2, 110, 305, 70,35, this);
             g.drawImage(img2, 310, 155, 70,35, this);
             g.drawImage(img2, 310, 305, 70,35, this);
+
+            if(user.seating[0]==true) {
+                g.drawImage(img3, 110, 155, 70,35, this);
+            }
+            if(user.seating[1]==true) {
+                g.drawImage(img2, 110, 305, 70,35, this);
+            }
+            if(user.seating[2]==true) {
+                g.drawImage(img2, 310, 155, 70,35, this);
+            }
+            if(user.seating[3]==true) {
+                g.drawImage(img2, 310, 305, 70,35, this);
+            }
         }
     }
 
